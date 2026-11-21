@@ -3,8 +3,8 @@
 namespace facilo\faro\Craft\controllers;
 
 use Craft;
-use yii\web\Response;
 use facilo\faro\Craft\Urls;
+use yii\web\Response;
 
 /** Faro SEO → Sitemap (F6). */
 class SitemapController extends BaseCpController

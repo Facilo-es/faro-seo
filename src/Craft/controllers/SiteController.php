@@ -5,10 +5,10 @@ namespace facilo\faro\Craft\controllers;
 use Craft;
 use craft\web\Controller;
 use facilo\faro\Core\Indexing;
+use facilo\faro\Craft\Urls;
 use facilo\faro\Plugin;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
-use facilo\faro\Craft\Urls;
 
 /** Front-end files: sitemap index, sitemap pages, robots.txt and the IndexNow key (F4, F6). */
 class SiteController extends Controller

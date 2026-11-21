@@ -3,13 +3,12 @@
 namespace facilo\faro\Craft\controllers;
 
 use Craft;
-use craft\elements\Asset;
 use facilo\faro\Core\Indexing;
 use facilo\faro\Core\SeoValue;
 use facilo\faro\Core\TitleFormat;
+use facilo\faro\Craft\Urls;
 use facilo\faro\Plugin;
 use yii\web\Response;
-use facilo\faro\Craft\Urls;
 
 /** Faro SEO → Settings, in four tabs (§5). Admins only; saved to project config. */
 class SettingsController extends BaseCpController
