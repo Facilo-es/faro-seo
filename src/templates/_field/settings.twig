@@ -1,0 +1,12 @@
+{% import '_includes/forms' as forms %}
+<div class="faro">
+    {{ forms.textField({label: 'Title format'|t('faro-seo'), name: 'titleFormat', value: field.titleFormat, class: 'code',
+        instructions: 'Leave empty to use the site’s format from Faro SEO settings. `{title}` is the page title.'|t('faro-seo')}) }}
+    {{ forms.textareaField({label: 'Default description'|t('faro-seo'), name: 'defaultDescription', value: field.defaultDescription, rows: 2,
+        instructions: 'Used when a page has nothing of its own.'|t('faro-seo')}) }}
+    {{ forms.elementSelectField({label: 'Default share image'|t('faro-seo'), name: 'defaultImageId', id: 'faro-default-image', elementType: 'craft\\elements\\Asset',
+        criteria: {kind: 'image'}, limit: 1, elements: field.defaultImageId ? [craft.app.assets.getAssetById(field.defaultImageId)]|filter : []}) }}
+    {{ forms.checkboxGroupField({label: 'Default robots'|t('faro-seo'), name: 'defaultRobots', values: field.defaultRobots, options: robots|map(r => {value: r, label: r})}) }}
+    {{ forms.lightswitchField({label: 'Hide the Social tab'|t('faro-seo'), name: 'hideSocial', on: field.hideSocial}) }}
+    {{ forms.lightswitchField({label: 'Hide the Advanced tab'|t('faro-seo'), name: 'hideAdvanced', on: field.hideAdvanced}) }}
+</div>

@@ -1,0 +1,23 @@
+{% extends 'faro-seo/settings/_base' %}
+{% import '_includes/forms' as forms %}
+
+{% block tab %}
+    <p class="faro-intro"><span>{{ 'Faro takes the first field that has a value.'|t('faro-seo') }}</span></p>
+    {% for src in sources %}
+        {% set map = settings.fallbackMaps[src.key] ?? {} %}
+        {% set ns = 'settings[fallbackMaps][' ~ src.key ~ ']' %}
+        <section class="faro-blk">
+            <h3>{{ src.name }}</h3>
+            {% for part, label in {title: 'Title from'|t('faro-seo'), description: 'Description from'|t('faro-seo')} %}
+                {{ forms.checkboxSelectField({label: label, name: ns ~ '[' ~ part ~ ']', values: map[part] ?? (part == 'title' ? ['title'] : []),
+                    options: src.text|map((name, handle) => {value: handle, label: name})|values, showAllOption: false}) }}
+            {% endfor %}
+            {% if src.images|length %}
+                {{ forms.checkboxSelectField({label: 'Image from'|t('faro-seo'), name: ns ~ '[image]', values: map.image ?? [],
+                    options: src.images|map((name, handle) => {value: handle, label: name})|values, showAllOption: false}) }}
+            {% endif %}
+        </section>
+    {% else %}
+        <p class="faro-empty">{{ 'No sections yet.'|t('faro-seo') }}</p>
+    {% endfor %}
+{% endblock %}

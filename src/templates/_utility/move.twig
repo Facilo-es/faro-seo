@@ -1,0 +1,96 @@
+{% do view.registerAssetBundle('facilo\\faro\\Craft\\web\\PagesAsset') %}
+{# Utilities → Move from Ether SEO: scan, check the report, move. Design A. #}
+{% set step = done ? 4 : (report ? 2 : 1) %}
+<div class="faro">
+    <div class="faro-intro">
+        <img src="{{ view.getAssetManager().getPublishedUrl('@faro/icon.svg', true) }}" alt="" width="44" height="44">
+        <div>
+            <h2>{{ 'Move everything from Ether SEO to Faro SEO'|t('faro-seo') }}</h2>
+            <p>{{ 'Move everything from Ether SEO to Faro SEO: fields, every page’s titles and share images, field settings, sitemap, custom URLs and redirects. Your templates keep working.'|t('faro-seo') }}</p>
+            <p class="faro-muted">{{ 'Tested with Ether SEO 5.0. The database backup made before the move is your undo.'|t('faro-seo') }}</p>
+        </div>
+    </div>
+    <ol class="faro-rail">
+        <li class="{{ step > 1 ? 'done' : 'now' }}"><b>1</b><span>{{ 'Scan'|t('faro-seo') }}</span></li>
+        <li class="{{ step > 2 ? 'done' : (step == 2 ? 'now') }}"><b>2</b><span>{{ 'Check the report'|t('faro-seo') }}</span></li>
+        <li class="{{ step == 4 ? 'done' : '' }}"><b>3</b><span>{{ 'Move'|t('faro-seo') }}</span></li>
+    </ol>
+
+    {% if done %}
+        {% set c = done.counts ?? done %}
+        <div class="faro-calm">
+            <span class="ring"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg></span>
+            <div>
+                <h2>{{ 'Your SEO is in Faro now'|t('faro-seo') }}</h2>
+                <p>{{ 'Moved {fields} fields, {values} page values on {sites} sites, {redirects} redirects and {urls} sitemap URLs. Next: uninstall Ether SEO in Settings → Plugins. Your templates will keep working.'|t('faro-seo', {
+                    fields: (c.fields ?? 0)|number, values: (c.values ?? 0)|number, sites: (c.sites ?? 0)|number, redirects: (c.redirects ?? 0)|number, urls: (c.urls ?? 0)|number}) }}</p>
+                {% if done.movedOn ?? false %}
+                    <p class="faro-muted">{{ 'Moved on {date}.'|t('faro-seo', {date: done.movedOn|datetime('short')}) }}{% if done.againOn %} {{ 'Run again on {date}: nothing new to move.'|t('faro-seo', {date: done.againOn|datetime('short')}) }}{% endif %}</p>
+                {% endif %}
+                {% if not (done.adminChanges ?? adminChanges) %}
+                    <p>{{ 'On your live site, run `php craft faro-seo/ether/data` after deploying, to copy redirects and sitemap settings there.'|t('faro-seo') }}</p>
+                {% endif %}
+                <div class="buttons">
+                    {% if installed %}<a class="btn submit" href="{{ cpUrl('settings/plugins') }}">{{ 'Go to Plugins'|t('faro-seo') }}</a>{% endif %}
+                    <a class="btn" href="{{ cpUrl('faro-seo/redirects') }}">{{ 'See redirects'|t('faro-seo') }}</a>
+                    <a class="btn" href="{{ cpUrl('faro-seo/sitemap') }}">{{ 'See sitemap'|t('faro-seo') }}</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if not found and not done %}
+        <p class="faro-note">{{ 'Ether SEO’s data wasn’t found on this site, so there is nothing to move.'|t('faro-seo') }}</p>
+    {% elseif found %}
+        <form method="post" class="faro-go">
+            {{ csrfInput() }}{{ actionInput('faro-seo/utility/scan') }}
+            <p>{{ 'Scanning reads your data. It doesn’t change anything.'|t('faro-seo') }}</p>
+            <span class="sp"></span>
+            <button class="btn {{ report ? '' : 'submit' }}" type="submit">{{ report ? 'Scan again'|t('faro-seo') : 'Scan'|t('faro-seo') }}</button>
+        </form>
+    {% endif %}
+
+    {% if report %}
+        <div class="faro-blocks">
+            {% for key, heading in {will: 'Will move'|t('faro-seo'), check: 'Please check'|t('faro-seo'), wont: 'Won’t move'|t('faro-seo')} %}
+                {% set items = report[key] ?? [] %}
+                <section class="faro-blk">
+                    <h3><span class="faro-dot {{ key == 'will' ? 'good' : (key == 'check' ? 'fair') }}"></span>{{ heading }} <span class="n">{{ items|length }}</span></h3>
+                    {% if items|length %}
+                        <ul>{% for i in items %}<li>{{ i }}</li>{% endfor %}</ul>
+                    {% else %}
+                        <p class="faro-help">{{ key == 'wont' ? 'Nothing. Everything Ether SEO stored has a place in Faro SEO.'|t('faro-seo') : 'Nothing'|t('faro-seo') }}</p>
+                    {% endif %}
+                </section>
+            {% endfor %}
+            <section class="faro-blk">
+                <h3>{{ 'Templates using Ether SEO'|t('faro-seo') }} <span class="n">{{ report.templates|length }}</span></h3>
+                {% if report.templates|length %}
+                    <ul>
+                        {% for tpl in report.templates %}
+                            <li><code>{{ tpl.file }}:{{ tpl.line }}</code> <span class="faro-mono">{{ tpl.text }}</span> <span class="faro-badge ok">{{ 'Keeps working'|t('faro-seo') }}</span></li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="faro-help">{{ 'None found.'|t('faro-seo') }}</p>
+                {% endif %}
+            </section>
+        </div>
+
+        <form method="post" class="faro-go">
+            {{ csrfInput() }}{{ actionInput('faro-seo/utility/report') }}
+            <span class="sp"></span>
+            <button class="btn" type="submit">{{ 'Download report'|t('faro-seo') }}</button>
+        </form>
+
+        {% if not done %}
+            <form method="post" class="faro-go">
+                {{ csrfInput() }}{{ actionInput('faro-seo/utility/move') }}
+                <label><input type="checkbox" name="backup" value="1" checked> {{ 'Back up the database first'|t('faro-seo') }}</label>
+                <span class="faro-muted">{{ 'Safe to run again: it skips what has already moved.'|t('faro-seo') }}</span>
+                <span class="sp"></span>
+                <button class="btn submit" type="submit">{{ 'Move'|t('faro-seo') }}</button>
+            </form>
+        {% endif %}
+    {% endif %}
+</div>

@@ -1,0 +1,69 @@
+{
+  "name": "facilo/faro-seo",
+  "description": "Get found in search: titles, share images, sitemap and redirects for Craft, with a one-click move from Ether SEO. Pro finds broken links and suggests the fix.",
+  "type": "craft-plugin",
+  "version": "1.0.0",
+  "license": "proprietary",
+  "homepage": "https://facilo.es/",
+  "keywords": [
+    "seo",
+    "meta",
+    "sitemap",
+    "redirects",
+    "404",
+    "open graph",
+    "json-ld",
+    "robots",
+    "canonical",
+    "hreflang",
+    "ether seo"
+  ],
+  "support": {
+    "email": "info@facilo.es",
+    "issues": "https://github.com/Facilo-es/faro-seo/issues",
+    "docs": "https://github.com/Facilo-es/faro-seo/blob/main/docs/README.md",
+    "source": "https://github.com/Facilo-es/faro-seo"
+  },
+  "require": {
+    "php": "^8.2",
+    "craftcms/cms": "^5.5.0",
+    "spatie/schema-org": "^3.0"
+  },
+  "require-dev": {
+    "craftcms/ecs": "dev-main",
+    "craftcms/phpstan": "dev-main",
+    "phpstan/phpstan": "^1.12",
+    "phpunit/phpunit": "^11.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "facilo\\faro\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "facilo\\faro\\tests\\": "tests/"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "craftcms/plugin-installer": true,
+      "yiisoft/yii2-composer": true
+    }
+  },
+  "extra": {
+    "handle": "faro-seo",
+    "name": "Faro SEO",
+    "developer": "Facilo",
+    "documentationUrl": "https://github.com/Facilo-es/faro-seo/blob/main/docs/README.md",
+    "class": "facilo\\faro\\Plugin",
+    "changelogUrl": "https://raw.githubusercontent.com/Facilo-es/faro-seo/main/CHANGELOG.md"
+  },
+  "scripts": {
+    "check-cs": "ecs check --ansi",
+    "fix-cs": "ecs check --ansi --fix",
+    "phpstan": "phpstan --memory-limit=1G"
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}

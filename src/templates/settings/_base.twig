@@ -1,0 +1,23 @@
+{# Shared frame for the four settings tabs. #}
+{% extends 'faro-seo/_layout' %}
+{% import '_includes/forms' as forms %}
+{% set selectedSubnavItem = 'settings' %}
+{% set fullPageForm = not readOnly %}
+{% set tabNames = {titles: 'Titles and defaults'|t('faro-seo'), sections: 'Sections'|t('faro-seo'), social: 'Social'|t('faro-seo'), indexing: 'Indexing'|t('faro-seo')} %}
+
+{% block content %}
+    {% if not readOnly %}
+        {{ actionInput('faro-seo/settings/save') }}
+        {{ redirectInput('faro-seo/settings/' ~ tab) }}
+    {% else %}
+        <p class="faro-note warn">{{ 'Settings can only be changed where admin changes are allowed, usually your local or staging site.'|t('faro-seo') }}</p>
+    {% endif %}
+    <nav class="faro-tabs">
+        {% for key, label in tabNames %}
+            <a href="{{ cpUrl('faro-seo/settings/' ~ key) }}" class="{{ key == tab ? 'sel' }}">{{ label }}</a>
+        {% endfor %}
+    </nav>
+    <fieldset {{ readOnly ? 'disabled' }}>
+        {% block tab %}{% endblock %}
+    </fieldset>
+{% endblock %}

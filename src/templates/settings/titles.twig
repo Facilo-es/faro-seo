@@ -1,0 +1,26 @@
+{% extends 'faro-seo/settings/_base' %}
+{% import '_includes/forms' as forms %}
+
+{% block tab %}
+    <p class="faro-intro"><span>{{ 'Used when a page has nothing of its own.'|t('faro-seo') }}</span></p>
+    {% for site in allSites %}
+        {% set f = settings.titleFormats[site.uid] ?? {} %}
+        {% set ns = 'settings[titleFormats][' ~ site.uid ~ ']' %}
+        <section class="faro-blk" data-faro-title-example>
+            {% if allSites|length > 1 %}<h3>{{ site.name }} <span class="n">{{ site.language }}</span></h3>{% endif %}
+            {{ forms.textField({label: 'Site name'|t('faro-seo'), name: ns ~ '[siteName]', value: f.siteName ?? '', placeholder: site.name, data: {'faro-site-name': site.name}}) }}
+            {{ forms.selectField({label: 'Separator'|t('faro-seo'), name: ns ~ '[separator]', value: f.separator ?? '|', options: separators|map(s => {value: s, label: s})}) }}
+            {{ forms.selectField({label: 'Site name goes'|t('faro-seo'), name: ns ~ '[position]', value: f.position ?? 'after', options: [
+                {value: 'after', label: 'After the title'|t('faro-seo')},
+                {value: 'before', label: 'Before the title'|t('faro-seo')},
+                {value: 'none', label: 'Not in the title'|t('faro-seo')}]}) }}
+            <p class="faro-muted">{{ 'Example'|t('faro-seo') }}: <span class="faro-mono" data-faro-example>{{ '{Page title}'|t('faro-seo') }} {{ f.separator ?? '|' }} {{ f.siteName ?: site.name }}</span></p>
+            {{ forms.textareaField({label: 'Default description'|t('faro-seo'), name: 'settings[defaultDescriptions][' ~ site.uid ~ ']', value: settings.defaultDescriptions[site.uid] ?? '', rows: 2}) }}
+            {{ forms.elementSelectField({label: 'Default share image'|t('faro-seo'), name: 'settings[defaultImages][' ~ site.uid ~ ']', id: 'faro-img-' ~ site.id,
+                elementType: 'craft\\elements\\Asset', criteria: {kind: 'image'}, limit: 1, elements: (images[site.uid] ?? null) ? [images[site.uid]] : []}) }}
+        </section>
+    {% endfor %}
+    {{ forms.checkboxGroupField({label: 'Default robots'|t('faro-seo'), name: 'settings[globalRobots]', values: settings.globalRobots,
+        instructions: 'Most sites leave these all off.'|t('faro-seo'),
+        options: robotsOptions|map(r => {value: r, label: r})}) }}
+{% endblock %}

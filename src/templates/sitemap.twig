@@ -1,0 +1,66 @@
+{% extends 'faro-seo/_layout' %}
+{% set selectedSubnavItem = 'sitemap' %}
+{% set fullPageForm = true %}
+
+{% block actionButton %}
+    <div class="buttons faro-actions">
+        <a class="btn" href="{{ sitemapUrl }}" target="_blank" rel="noopener">{{ 'Open the sitemap'|t('faro-seo') }}</a>
+        <button type="submit" class="btn submit">{{ 'Save'|t('app') }}</button>
+    </div>
+{% endblock %}
+
+{% block content %}
+    {{ actionInput('faro-seo/sitemap/save') }}
+    {{ hiddenInput('siteId', site.id) }}
+
+    {% if sites|length > 1 %}
+        <nav class="faro-tabs">
+            {% for s in sites %}
+                <a href="{{ cpUrl('faro-seo/sitemap', {site: s.handle}) }}" class="{{ s.id == site.id ? 'sel' }}">{{ s.name }}</a>
+            {% endfor %}
+        </nav>
+    {% endif %}
+
+    <p class="faro-intro"><span>{{ 'Search engines find your pages through this list. Turn off anything that shouldn’t be found, like thank-you pages.'|t('faro-seo') }} <a class="faro-mono" href="{{ sitemapUrl }}" target="_blank" rel="noopener">{{ sitemapUrl }}</a></span></p>
+
+    <div class="faro-scroll"><table class="data fullwidth">
+        <thead><tr>
+            <th>{{ 'Section'|t('faro-seo') }}</th>
+            <th class="thin">{{ 'In the sitemap'|t('faro-seo') }}</th>
+            <th>{{ 'Changes'|t('faro-seo') }}</th>
+            <th>{{ 'Priority'|t('faro-seo') }}</th>
+        </tr></thead>
+        <tbody>
+            {% for s in sources %}
+                {% set base = 'sources[' ~ s.id ~ ']' %}
+                <tr>
+                    <td>{{ s.name }} <span class="light smalltext">{{ {section: 'Entries', categoryGroup: 'Categories', productType: 'Products'}[s.sourceType]|default('')|t('faro-seo') }}</span></td>
+                    <td class="thin">{% include '_includes/forms/lightswitch' with {name: base ~ '[enabled]', on: s.enabled, small: true} only %}</td>
+                    <td><div class="select small"><select name="{{ base }}[changefreq]">
+                        {% for f in freqs %}<option value="{{ f }}" {{ s.changefreq == f ? 'selected' }}>{{ f|t('faro-seo') }}</option>{% endfor %}
+                    </select></div></td>
+                    <td><input class="text small" type="number" min="0" max="1" step="0.1" name="{{ base }}[priority]" value="{{ s.priority }}"></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table></div>
+
+    <h2>{{ 'Other addresses'|t('faro-seo') }}</h2>
+    <p class="faro-help">{{ 'Pages that aren’t entries, like a search page or a page from another system on this domain.'|t('faro-seo') }}</p>
+    <div class="faro-scroll">
+    {% include '_includes/forms/editableTable' with {
+        id: 'faro-custom',
+        name: 'custom',
+        cols: {
+            url: {heading: 'Address'|t('faro-seo'), type: 'singleline', code: true},
+            changefreq: {heading: 'Changes'|t('faro-seo'), type: 'select', options: freqs|map(f => {value: f, label: f|t('faro-seo')})},
+            priority: {heading: 'Priority'|t('faro-seo'), type: 'number', min: 0, max: 1, step: 0.1, thin: true},
+            enabled: {heading: 'On'|t('faro-seo'), type: 'lightswitch', thin: true},
+        },
+        rows: custom|map(c => {url: c.url, changefreq: c.changefreq, priority: c.priority, enabled: c.enabled}),
+        allowAdd: true, allowDelete: true, allowReorder: true,
+        addRowLabel: 'Add an address'|t('faro-seo'),
+        defaultValues: {changefreq: 'weekly', priority: 0.5, enabled: true},
+    } only %}
+    </div>
+{% endblock %}

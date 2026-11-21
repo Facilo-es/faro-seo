@@ -1,0 +1,57 @@
+{% extends 'faro-seo/_layout' %}
+{% import '_includes/forms' as forms %}
+{% set selectedSubnavItem = 'redirects' %}
+{% set title = 'Import redirects'|t('faro-seo') %}
+{% set crumbs = [{label: 'Redirects'|t('faro-seo'), url: cpUrl('faro-seo/redirects')}] %}
+{% set labels = {retour: 'Retour', sprout: 'Sprout Redirects', dolphiq: 'Redirect Manager (Dolphiq)'} %}
+
+{% block content %}
+    {% if result ?? null %}
+        <section class="faro-blk">
+            <h3>{{ dryRun ? 'Preview: nothing has been saved yet'|t('faro-seo') : 'Import finished'|t('faro-seo') }}</h3>
+            <p>{{ dryRun ? '{added} will be added, {skipped} are already there.'|t('faro-seo', {added: result.added|number, skipped: result.skipped|number}) : '{added} added, {skipped} were already there.'|t('faro-seo', {added: result.added|number, skipped: result.skipped|number}) }}</p>
+            {% if result.errors|length %}
+                <p class="faro-help">{{ 'These rows won’t be imported:'|t('faro-seo') }}</p>
+                <ul>{% for e in result.errors|slice(0, 50) %}<li class="faro-mono">{{ e }}</li>{% endfor %}</ul>
+            {% endif %}
+            {% if dryRun and result.added %}
+                <form method="post">
+                    {{ csrfInput() }}{{ actionInput('faro-seo/redirects/import') }}
+                    {{ hiddenInput('source', source) }}{{ hiddenInput('confirm', 1) }}
+                    {% if siteId %}{{ hiddenInput('siteId', siteId) }}{% endif %}
+                    <button class="btn submit" type="submit">{{ 'Import {n} redirects'|t('faro-seo', {n: result.added|number}) }}</button>
+                </form>
+            {% endif %}
+        </section>
+    {% endif %}
+
+    {% if foreign|length %}
+        <section class="faro-blk">
+            <h3>{{ 'From another redirect plugin'|t('faro-seo') }}</h3>
+            <ul>
+                {% for key, count in foreign %}
+                    <li>
+                        <form method="post" class="faro-go">
+                            {{ csrfInput() }}{{ actionInput('faro-seo/redirects/import') }}{{ hiddenInput('source', key) }}
+                            <span><b>{{ labels[key] ?? key }}</b> <span class="faro-muted">{{ '{n} redirects found'|t('faro-seo', {n: count|number}) }}</span></span>
+                            <span class="sp"></span>
+                            <button class="btn" type="submit">{{ 'Preview import'|t('faro-seo') }}</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="faro-blk">
+        <h3>{{ 'From a CSV file'|t('faro-seo') }}</h3>
+        <p class="faro-help">{{ 'Columns: From, To, then optionally Match (exact, prefix or regex), Type (301, 302, 307, 308 or 410), Query string and Enabled. A header row is fine.'|t('faro-seo') }}</p>
+        {{ csrfInput() }}{{ actionInput('faro-seo/redirects/import') }}{{ hiddenInput('source', 'csv') }}
+        {{ forms.fileField({label: 'CSV file'|t('faro-seo'), name: 'csv', accept: '.csv,text/csv'}) }}
+        {% if sites|length > 1 %}
+            {{ forms.selectField({label: 'Site'|t('faro-seo'), name: 'siteId', value: siteId ?? '',
+                options: [{value: '', label: 'All sites'|t('faro-seo')}]|merge(sites|map(s => {value: s.id, label: s.name}))}) }}
+        {% endif %}
+        <button class="btn submit" type="submit">{{ 'Preview import'|t('faro-seo') }}</button>
+    </form>
+{% endblock %}

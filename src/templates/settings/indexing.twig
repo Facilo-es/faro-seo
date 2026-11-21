@@ -1,0 +1,44 @@
+{% extends 'faro-seo/settings/_base' %}
+{% import '_includes/forms' as forms %}
+
+{% block tab %}
+    {{ forms.textField({label: 'Production environments'|t('faro-seo'), name: 'settings[productionEnvironments]', value: settings.productionEnvironments, class: 'code',
+        instructions: 'Separate with commas. On any other environment, search engines are told not to index the site.'|t('faro-seo')}) }}
+    {{ forms.textareaField({label: 'robots.txt'|t('faro-seo'), name: 'settings[robotsTxt]', value: settings.robotsTxt ?: defaultRobotsTxt, rows: 8, class: 'code',
+        instructions: 'Twig works here. Faro serves it at /robots.txt.'|t('faro-seo')}) }}
+
+    {% if allSites|length > 1 %}
+        <section class="faro-blk">
+            <h3>{{ 'Languages in search'|t('faro-seo') }}</h3>
+            {% set siteOpts = [{value: '', label: 'Primary site'|t('faro-seo')}]|merge(allSites|map(s => {value: s.uid, label: s.name ~ ' (' ~ s.language ~ ')'})) %}
+            {{ forms.selectField({label: 'x-default site'|t('faro-seo'), name: 'settings[xDefaultSite]', value: settings.xDefaultSite, options: siteOpts,
+                instructions: 'Shown to searchers whose language none of your sites match.'|t('faro-seo')}) }}
+            {{ forms.selectField({label: 'Fallback site'|t('faro-seo'), name: 'settings[fallbackSite]', value: settings.fallbackSite, options: siteOpts}) }}
+            {{ forms.lightswitchField({label: 'Language versions in the sitemap'|t('faro-seo'), name: 'settings[sitemapAlternates]', on: settings.sitemapAlternates}) }}
+        </section>
+    {% endif %}
+
+    <section class="faro-blk">
+        <h3>{{ 'Sitemap'|t('faro-seo') }}</h3>
+        {{ forms.textField({label: 'Sitemap address'|t('faro-seo'), name: 'settings[sitemapName]', value: settings.sitemapName, class: 'code'}) }}
+        {{ forms.textField({label: 'Addresses per sitemap page'|t('faro-seo'), name: 'settings[sitemapLimit]', value: settings.sitemapLimit, type: 'number', size: 6}) }}
+        {{ forms.lightswitchField({label: 'IndexNow'|t('faro-seo'), name: 'settings[indexNow]', on: settings.indexNow,
+            instructions: 'Tells Bing and other IndexNow search engines when a page changes. Google doesn’t use IndexNow.'|t('faro-seo')}) }}
+    </section>
+
+    <section class="faro-blk">
+        <h3>{{ 'Redirects and broken links'|t('faro-seo') }}</h3>
+        {{ forms.lightswitchField({label: 'Check redirects before Craft routes a page'|t('faro-seo'), name: 'settings[checkBeforeRouting]', on: settings.checkBeforeRouting,
+            instructions: 'Off: redirects run only when a page would be missing, which is faster.'|t('faro-seo')}) }}
+        {{ forms.lightswitchField({label: 'Add a redirect when a page’s address changes'|t('faro-seo') ~ (isPro ? '' : ' · Pro'), name: 'settings[uriChangeRedirects]', on: settings.uriChangeRedirects, disabled: not isPro}) }}
+        {{ forms.lightswitchField({label: 'Record broken links'|t('faro-seo') ~ (isPro ? '' : ' · Pro'), name: 'settings[log404s]', on: settings.log404s, disabled: not isPro}) }}
+        {{ forms.textareaField({label: 'Extra bot patterns'|t('faro-seo'), name: 'settings[botPatterns]', value: settings.botPatterns|join("\n"), rows: 3, class: 'code',
+            instructions: 'Addresses matching these go to the Bots tab. One per line, like /wp-admin.'|t('faro-seo')}) }}
+    </section>
+
+    <section class="faro-blk">
+        <h3>{{ 'Meta template'|t('faro-seo') }}</h3>
+        {{ forms.textField({label: 'Your own meta template'|t('faro-seo'), name: 'settings[metaTemplate]', value: settings.metaTemplate, class: 'code', placeholder: '_seo/meta.twig',
+            instructions: 'Leave empty to use Faro’s tags. Your template gets `meta`, `seo` and `faroTags`.'|t('faro-seo')}) }}
+    </section>
+{% endblock %}

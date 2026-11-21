@@ -1,0 +1,81 @@
+{% extends 'faro-seo/_layout' %}
+{% set selectedSubnavItem = 'broken-links' %}
+
+{% block content %}
+    <div class="faro-cards">
+        <div class="faro-card"><small>{{ 'Broken links this week'|t('faro-seo') }}</small><b>{{ thisWeek|number }}</b></div>
+        <div class="faro-card"><small>{{ 'Visits caught by fixes made here'|t('faro-seo') }}</small><b>{{ sentRight|number }}</b></div>
+        <div class="faro-card"><small>{{ 'Most came from'|t('faro-seo') }}</small><b class="faro-mono">{{ topSource ?: '—' }}</b></div>
+    </div>
+
+    <nav class="faro-tabs">
+        <a href="{{ cpUrl('faro-seo/broken-links', {tab: 'visitors'}) }}" class="{{ tab == 'visitors' ? 'sel' }}">{{ 'Visitors'|t('faro-seo') }} <span class="n">{{ counts.visitors|number }}</span></a>
+        <a href="{{ cpUrl('faro-seo/broken-links', {tab: 'bots'}) }}" class="{{ tab == 'bots' ? 'sel' }}">{{ 'Bots'|t('faro-seo') }} <span class="n">{{ counts.bots|number }}</span></a>
+        <a href="{{ cpUrl('faro-seo/broken-links', {tab: 'fixed'}) }}" class="{{ tab == 'fixed' ? 'sel' }}">{{ 'Fixed'|t('faro-seo') }} <span class="n">{{ counts.fixed|number }}</span></a>
+        {% if rows|length and tab != 'fixed' %}
+            <button type="button" class="btn small" data-faro-ignore-all="{{ rows|column('id')|json_encode }}">{{ 'Ignore all'|t('faro-seo') }}</button>
+        {% endif %}
+    </nav>
+
+    {% if rows|length %}
+        <div class="faro-head">
+            <span class="addr">{{ 'Address'|t('faro-seo') }}</span>
+            <span class="hits">{{ 'Hits'|t('faro-seo') }}</span>
+            <span class="when">{{ 'Last seen'|t('faro-seo') }}</span>
+            <span class="from">{{ 'Came from'|t('faro-seo') }}</span>
+        </div>
+        {% for row in rows %}
+            <div class="faro-row{{ row.isBot ? ' bot' }}{{ tab == 'fixed' ? ' fixed' }}" data-id="{{ row.id }}">
+                <span class="addr faro-mono">/{{ row.uri }}</span>
+                <span class="hits">{{ row.hits|number }}</span>
+                <span class="when">{{ row.lastSeen|timestamp('short') }}</span>
+                <span class="from faro-muted">{{ row.referrer ?: 'Direct or unknown'|t('faro-seo') }}</span>
+                {% if tab == 'fixed' %}
+                    <div class="faro-fix done">
+                        <span class="head"><span class="faro-badge">{{ 'Redirect added'|t('faro-seo') }}</span></span>
+                        <span class="to faro-mono">/{{ row.suggestion|trim('/', 'left') }}</span>
+                    </div>
+                {% elseif row.suggestion %}
+                    <form class="faro-fix" method="post" data-faro-fix>
+                        {{ csrfInput() }}
+                        {{ actionInput('faro-seo/broken-links/accept') }}
+                        {{ hiddenInput('id', row.id) }}
+                        <span class="head">
+                            <span class="why">{{ 'Suggested fix'|t('faro-seo') }}</span>
+                            {% if row.suggestionScore == 'high' %}
+                                <span class="faro-badge warn">{{ 'High confidence'|t('faro-seo') }}</span>
+                            {% else %}
+                                <span class="faro-badge">{{ 'Medium confidence'|t('faro-seo') }}</span>
+                            {% endif %}
+                        </span>
+                        <input class="text to faro-mono" type="text" name="destination" value="/{{ row.suggestion|trim('/', 'left') }}" readonly aria-label="{{ 'Send visitors to'|t('faro-seo') }}">
+                        <span class="acts">
+                            <button type="submit" class="btn submit small">{{ 'Accept'|t('faro-seo') }}</button>
+                            <button type="button" class="btn small" data-faro-edit>{{ 'Edit'|t('faro-seo') }}</button>
+                            <button type="button" class="btn small" data-faro-ignore="{{ row.id }}">{{ 'Ignore'|t('faro-seo') }}</button>
+                        </span>
+                    </form>
+                {% else %}
+                    <form class="faro-fix faro-nofix" method="post" data-faro-fix>
+                        {{ csrfInput() }}
+                        {{ actionInput('faro-seo/broken-links/accept') }}
+                        {{ hiddenInput('id', row.id) }}
+                        <span class="why">{{ 'No close match. Where should visitors go?'|t('faro-seo') }}</span>
+                        <input class="text to faro-mono" type="text" name="destination" placeholder="/" aria-label="{{ 'Send visitors to'|t('faro-seo') }}">
+                        <span class="acts">
+                            <button type="submit" class="btn submit small">{{ 'Accept'|t('faro-seo') }}</button>
+                            <button type="button" class="btn small" data-faro-ignore="{{ row.id }}">{{ 'Ignore'|t('faro-seo') }}</button>
+                        </span>
+                    </form>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="faro-empty">
+            <span class="ring"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg></span>
+            <p>{{ 'No broken links this week. Visitors are finding their pages.'|t('faro-seo') }}</p>
+        </div>
+    {% endif %}
+
+    <p class="faro-note">{{ 'Where visitors came from is the referrer their browser sends. Faro adds no tracking script and stores no IP addresses.'|t('faro-seo') }}</p>
+{% endblock %}

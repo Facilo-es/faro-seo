@@ -1,0 +1,31 @@
+{% extends 'faro-seo/_layout' %}
+{% import '_includes/forms' as forms %}
+{% set selectedSubnavItem = 'redirects' %}
+{% set title = redirect.id ? 'Edit redirect'|t('faro-seo') : 'New redirect'|t('faro-seo') %}
+{% set crumbs = [{label: 'Redirects'|t('faro-seo'), url: cpUrl('faro-seo/redirects')}] %}
+{% set fullPageForm = true %}
+
+{% block content %}
+    {{ actionInput('faro-seo/redirects/save') }}
+    {{ redirectInput('faro-seo/redirects') }}
+    {% if redirect.id %}{{ hiddenInput('id', redirect.id) }}{% endif %}
+
+    {% if error %}<p class="faro-note warn">{{ error }}</p>{% endif %}
+
+    {{ forms.textField({label: 'From'|t('faro-seo'), name: 'source', value: redirect.source, class: 'code', required: true, autofocus: true,
+        instructions: 'The old address, like /old-page. Patterns use PHP regex, and $1 in the destination takes the first group.'|t('faro-seo')}) }}
+    {{ forms.selectField({label: 'Match'|t('faro-seo'), name: 'matchType', value: redirect.matchType,
+        options: [{value: 'exact', label: 'Exactly'|t('faro-seo')}, {value: 'prefix', label: 'Starts with'|t('faro-seo')}, {value: 'regex', label: 'Pattern (regex)'|t('faro-seo')}]}) }}
+    {{ forms.textField({label: 'To'|t('faro-seo'), name: 'destination', value: redirect.destination, class: 'code',
+        instructions: 'The new address, a path like /new-page or a full URL. Leave empty for Gone (410).'|t('faro-seo')}) }}
+    {% set codeLabels = {301: 'Permanent (301)'|t('faro-seo'), 302: 'Temporary (302)'|t('faro-seo'), 307: 'Temporary, keeps the method (307)'|t('faro-seo'), 308: 'Permanent, keeps the method (308)'|t('faro-seo'), 410: 'Gone (410)'|t('faro-seo')} %}
+    {{ forms.selectField({label: 'Type'|t('faro-seo'), name: 'statusCode', value: redirect.statusCode,
+        options: codes|map(c => {value: c, label: codeLabels[c] ?? c})}) }}
+    {{ forms.selectField({label: 'Query string'|t('faro-seo'), name: 'queryMode', value: redirect.queryMode,
+        options: [{value: 'keep', label: 'Pass it on to the new address'|t('faro-seo')}, {value: 'drop', label: 'Drop it'|t('faro-seo')}, {value: 'match', label: 'Match it as part of the address'|t('faro-seo')}]}) }}
+    {% if sites|length > 1 %}
+        {{ forms.selectField({label: 'Site'|t('faro-seo'), name: 'siteId', value: redirect.siteId,
+            options: [{value: '', label: 'All sites'|t('faro-seo')}]|merge(sites|map(s => {value: s.id, label: s.name}))}) }}
+    {% endif %}
+    {{ forms.lightswitchField({label: 'Enabled'|t('app'), name: 'enabled', on: redirect.enabled}) }}
+{% endblock %}

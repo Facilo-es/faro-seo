@@ -1,0 +1,21 @@
+{% extends 'faro-seo/settings/_base' %}
+{% import '_includes/forms' as forms %}
+
+{% block tab %}
+    <div class="flex">
+        {{ forms.textField({label: 'Share image size'|t('faro-seo') ~ ' (' ~ 'width'|t('faro-seo') ~ ')', name: 'settings[imageWidth]', value: settings.imageWidth, type: 'number', size: 6}) }}
+        {{ forms.textField({label: 'height'|t('faro-seo'), name: 'settings[imageHeight]', value: settings.imageHeight, type: 'number', size: 6}) }}
+    </div>
+    <p class="faro-muted">{{ '1200 × 630 works on Facebook, X and LinkedIn.'|t('faro-seo') }}</p>
+    {{ forms.textField({label: 'Facebook App ID'|t('faro-seo'), name: 'settings[facebookAppId]', value: settings.facebookAppId}) }}
+    {{ forms.textField({label: 'X handle'|t('faro-seo'), name: 'settings[xHandle]', value: settings.xHandle, placeholder: '@facilo'}) }}
+    <section class="faro-blk">
+        <h3>{{ 'Organization name, logo and profiles'|t('faro-seo') }}</h3>
+        {{ forms.lightswitchField({label: 'Add structured data (JSON-LD)'|t('faro-seo'), name: 'settings[jsonLd]', on: settings.jsonLd}) }}
+        {{ forms.textField({label: 'Organization name'|t('faro-seo'), name: 'settings[organizationName]', value: settings.organizationName}) }}
+        {{ forms.elementSelectField({label: 'Logo'|t('faro-seo'), name: 'settings[organizationLogo]', id: 'faro-logo', elementType: 'craft\\elements\\Asset',
+            criteria: {kind: 'image'}, limit: 1, elements: logo ? [logo] : []}) }}
+        {{ forms.textareaField({label: 'Profiles'|t('faro-seo'), name: 'settings[sameAs]', value: settings.sameAs|join("\n"), rows: 4, class: 'code',
+            instructions: 'One address per line, like your Facebook, Instagram or LinkedIn page.'|t('faro-seo')}) }}
+    </section>
+{% endblock %}

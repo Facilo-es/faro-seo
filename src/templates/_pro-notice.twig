@@ -1,0 +1,13 @@
+{% extends 'faro-seo/_layout' %}
+{% set selectedSubnavItem = craft.app.request.segments[1] ?? 'overview' %}
+
+{% block content %}
+    <div class="faro-calm faro-pro">
+        <div>
+            <h2>{{ 'Broken links and redirect health need Faro SEO Pro. Your redirects keep working.'|t('faro-seo') }}</h2>
+            <p>{{ 'Pro shows the broken links visitors hit, with a suggested fix for each, and cleans up redirect chains, loops and redirects to missing pages.'|t('faro-seo') }}</p>
+            <p class="faro-muted">{{ 'USD 49 per site, then USD 19 a year for updates. If you don’t renew, Pro keeps working; you just stop getting updates.'|t('faro-seo') }}</p>
+            <a class="btn submit" href="{{ buyUrl }}" target="_blank" rel="noopener">{{ 'Buy Pro'|t('faro-seo') }}</a>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'faro-seo/_layout' %}
+{% set title = 'Your site in search'|t('faro-seo') %}
+{% set selectedSubnavItem = 'overview' %}
+
+{% block content %}
+    {% if etherFound %}
+        <div class="faro-intro">
+            <img src="{{ view.getAssetManager().getPublishedUrl('@faro/icon.svg', true) }}" alt="" width="44" height="44">
+            <div>
+                <h2>{{ 'Moving from Ether SEO?'|t('faro-seo') }}</h2>
+                <p>{{ 'Move titles, share images, sitemap and redirects in one click. Your templates keep working.'|t('faro-seo') }}</p>
+            </div>
+            <a class="btn submit" href="{{ cpUrl('utilities/faro-move-from-ether') }}">{{ 'Start the move'|t('faro-seo') }}</a>
+        </div>
+    {% endif %}
+
+    <div class="faro-cards">
+        <a class="faro-card" href="{{ cpUrl('entries') }}">
+            <small>{{ 'Pages with SEO set'|t('faro-seo') }}</small>
+            <b>{{ withSeo|number }} <span class="faro-muted">/ {{ pages|number }}</span></b>
+            <span class="go">{{ 'Open entries'|t('faro-seo') }} →</span>
+        </a>
+        <a class="faro-card" href="{{ cpUrl('faro-seo/redirects') }}">
+            <small>{{ 'Redirects'|t('faro-seo') }}</small>
+            <b>{{ redirects|number }}</b>
+            {% if sentRight %}<span class="faro-muted">{{ 'Visits redirected so far: {n}'|t('faro-seo', {n: sentRight|number}) }}</span>{% endif %}
+            <span class="go">{{ 'Manage redirects'|t('faro-seo') }} →</span>
+        </a>
+        {% if broken is not null %}
+            <a class="faro-card accent" href="{{ cpUrl('faro-seo/broken-links') }}">
+                <small>{{ 'Broken links this week'|t('faro-seo') }}</small>
+                <b>{{ broken|number }}</b>
+                <span class="go">{{ 'Fix broken links'|t('faro-seo') }} →</span>
+            </a>
+        {% else %}
+            <div class="faro-card faro-pro">
+                <small>{{ 'Broken links'|t('faro-seo') }}</small>
+                <p>{{ 'See broken links that visitors hit, with a suggested fix for each.'|t('faro-seo') }} <span class="faro-badge warn">Pro</span></p>
+                <a href="{{ buyUrl }}" target="_blank" rel="noopener">{{ 'Upgrade'|t('faro-seo') }}</a>
+            </div>
+        {% endif %}
+        <a class="faro-card" href="{{ cpUrl('faro-seo/sitemap') }}">
+            <small>{{ 'Sitemap'|t('faro-seo') }}</small>
+            <b>{{ sitemapUrls|number }} <span class="faro-muted">URLs</span></b>
+            <span class="go">{{ 'Open sitemap'|t('faro-seo') }} →</span>
+        </a>
+    </div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{# Every Faro screen: Craft's control panel layout, wrapped in .faro so the styles stay ours. #}
+{% extends '_layouts/cp' %}
+{% do view.registerAssetBundle('facilo\\faro\\Craft\\web\\PagesAsset') %}
+{% set selectedSubnavItem = selectedSubnavItem ?? 'overview' %}
+
+{% block main %}
+    <div class="faro">
+        {{ parent() }}
+    </div>
+{% endblock %}

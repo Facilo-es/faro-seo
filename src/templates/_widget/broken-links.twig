@@ -1,0 +1,15 @@
+<div class="faro">
+    {% if not pro %}
+        <p>{{ 'See broken links that visitors hit, with a suggested fix for each.'|t('faro-seo') }} <span class="faro-badge warn">Pro</span></p>
+    {% elseif rows|length %}
+        <p><b>{{ 'Broken links this week: {n}'|t('faro-seo', {n: count|number}) }}</b></p>
+        <ul class="faro-checks">
+            {% for r in rows %}
+                <li><span class="faro-dot fair"></span><span class="faro-mono">/{{ r.uri }}</span> <span class="faro-muted">{{ r.hits|number }}</span></li>
+            {% endfor %}
+        </ul>
+        <a class="btn small" href="{{ cpUrl('faro-seo/broken-links') }}">{{ 'Fix them'|t('faro-seo') }}</a>
+    {% else %}
+        <p>{{ 'No broken links this week. Visitors are finding their pages.'|t('faro-seo') }}</p>
+    {% endif %}
+</div>

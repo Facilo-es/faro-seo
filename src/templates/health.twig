@@ -1,0 +1,66 @@
+{% extends 'faro-seo/_layout' %}
+{% set selectedSubnavItem = 'health' %}
+
+{% block actionButton %}
+    <form method="post">
+        {{ csrfInput() }}{{ actionInput('faro-seo/health/check-links') }}
+        <button class="btn" type="submit">{{ 'Check destinations now'|t('faro-seo') }}</button>
+    </form>
+{% endblock %}
+
+{% block content %}
+    {% set issues = report.chains|length + report.loops|length + report.missing|length %}
+    {% if issues == 0 and report.unused|length == 0 %}
+        <div class="faro-calm">
+            <span class="ring"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg></span>
+            <div>
+                <h2>{{ 'Your redirects are healthy'|t('faro-seo') }}</h2>
+                <p>{{ 'No chains, no loops, and every destination loads.'|t('faro-seo') }}</p>
+                {% if report.checked %}<p class="faro-muted">{{ 'Last checked {date}'|t('faro-seo', {date: report.checked|datetime('short')}) }}</p>{% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="faro-blocks">
+        {% if report.chains|length or report.loops|length %}
+            <section class="faro-blk">
+                <h3>{{ 'Chains'|t('faro-seo') }} <span class="n">{{ report.chains|length }}</span></h3>
+                <p class="faro-help">{{ '{n} redirects go through more than one step. Fix them so pages load faster.'|t('faro-seo', {n: report.chains|length}) }}</p>
+                <ul>
+                    {% for c in report.chains %}
+                        <li class="faro-mono">{{ c.rule.source }} → {{ c.final }} <span class="faro-muted">{{ '{n} steps'|t('faro-seo', {n: c.hops}) }}</span></li>
+                    {% endfor %}
+                    {% for r in report.loops %}
+                        <li class="faro-mono"><span class="faro-dot poor"></span>{{ 'Loop'|t('faro-seo') }}: {{ r.source }} → {{ r.destination }}</li>
+                    {% endfor %}
+                </ul>
+                {% if report.chains|length %}
+                    <p class="faro-help">{{ 'Fix all chains points each of these redirects straight at its final page, in one step. Nothing is deleted.'|t('faro-seo') }}</p>
+                    <form method="post">
+                        {{ csrfInput() }}{{ actionInput('faro-seo/health/fix-chains') }}
+                        <button class="btn submit" type="submit">{{ 'Fix all chains'|t('faro-seo') }}</button>
+                    </form>
+                {% endif %}
+            </section>
+        {% endif %}
+
+        {% for key, label in {missing: 'Lead to a missing page'|t('faro-seo'), unused: 'Unused for 12 months'|t('faro-seo')} %}
+            {% set list = attribute(report, key) %}
+            {% if list|length %}
+                <section class="faro-blk">
+                    <h3>{{ label }} <span class="n">{{ list|length }}</span></h3>
+                    <p class="faro-help">{{ 'The ticked redirects are turned off, not deleted, when you click the button. Untick any you want to keep. You can turn them back on in Redirects.'|t('faro-seo') }}</p>
+                    <form method="post">
+                        {{ csrfInput() }}{{ actionInput('faro-seo/health/disable') }}
+                        <ul>
+                            {% for r in list %}
+                                <li><label><input type="checkbox" name="ids[]" value="{{ r.id }}" checked> <span class="faro-mono">{{ r.source }} → {{ r.destination }}</span></label></li>
+                            {% endfor %}
+                        </ul>
+                        <button class="btn" type="submit">{{ 'Turn off the selected redirects'|t('faro-seo') }}</button>
+                    </form>
+                </section>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}

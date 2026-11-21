@@ -1,0 +1,62 @@
+{% extends 'faro-seo/_layout' %}
+{% set title = 'Redirects'|t('faro-seo') %}
+{% set selectedSubnavItem = 'redirects' %}
+{% set matchLabels = {exact: 'Exactly'|t('faro-seo'), prefix: 'Starts with'|t('faro-seo'), regex: 'Pattern (regex)'|t('faro-seo')} %}
+
+{% block actionButton %}
+    <div class="buttons faro-actions">
+        <form method="post">
+            {{ csrfInput() }}{{ actionInput('faro-seo/redirects/export') }}
+            {% if siteId %}{{ hiddenInput('siteId', siteId) }}{% endif %}
+            <button class="btn" type="submit">{{ 'Export CSV'|t('faro-seo') }}</button>
+        </form>
+        <a class="btn" href="{{ cpUrl('faro-seo/redirects/import') }}">{{ 'Import'|t('faro-seo') }}{% if not isPro %} <span class="faro-badge warn">Pro</span>{% endif %}</a>
+        <a class="btn submit add icon" href="{{ cpUrl('faro-seo/redirects/new') }}">{{ 'New redirect'|t('faro-seo') }}</a>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <form method="get" class="faro-tabs">
+        <input class="text" type="search" name="search" value="{{ search }}" placeholder="{{ 'Search redirects'|t('faro-seo') }}">
+        {% if sites|length > 1 %}
+            <div class="select"><select name="siteId" onchange="this.form.submit()">
+                <option value="">{{ 'All sites'|t('faro-seo') }}</option>
+                {% for s in sites %}<option value="{{ s.id }}" {{ siteId == s.id ? 'selected' }}>{{ s.name }}</option>{% endfor %}
+            </select></div>
+        {% endif %}
+    </form>
+
+    {% if rows|length %}
+        <div class="faro-scroll"><table class="data fullwidth" id="faro-redirects">
+            <thead><tr>
+                <th></th>
+                <th>{{ 'From'|t('faro-seo') }}</th>
+                <th>{{ 'To'|t('faro-seo') }}</th>
+                <th>{{ 'Type'|t('faro-seo') }}</th>
+                {% if sites|length > 1 %}<th>{{ 'Site'|t('faro-seo') }}</th>{% endif %}
+                <th class="thin">{{ 'Hits'|t('faro-seo') }}</th>
+                <th>{{ 'Last hit'|t('faro-seo') }}</th>
+                <th class="thin"></th>
+            </tr></thead>
+            <tbody>
+                {% for r in rows %}
+                    <tr data-id="{{ r.id }}" class="{{ not r.enabled ? 'disabled' }}">
+                        <td class="thin"><a class="move icon" title="{{ 'Reorder'|t('app') }}" role="button"></a></td>
+                        <td><a class="faro-mono" href="{{ cpUrl('faro-seo/redirects/' ~ r.id) }}">{{ r.source }}</a>
+                            {% if r.matchType != 'exact' %}<span class="faro-muted">{{ matchLabels[r.matchType] ?? r.matchType }}</span>{% endif %}</td>
+                        <td class="faro-mono">{{ r.statusCode == 410 ? 'Gone (410)'|t('faro-seo') : r.destination }}</td>
+                        <td>{{ r.statusCode }}</td>
+                        {% if sites|length > 1 %}<td>{{ r.siteId ? (craft.app.sites.getSiteById(r.siteId).name ?? '') : 'All sites'|t('faro-seo') }}</td>{% endif %}
+                        <td class="thin">{{ r.hits|number }}</td>
+                        <td>{{ r.lastHit ? r.lastHit|timestamp('short') : '—' }}</td>
+                        <td class="thin"><a class="delete icon" title="{{ 'Delete'|t('app') }}" role="button" data-faro-delete="{{ r.id }}"></a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table></div>
+    {% else %}
+        <div class="faro-empty">
+            <p>{{ search ? 'No redirects match your search.'|t('faro-seo') : 'No redirects yet. Add one when a page moves, so visitors and search engines land on the new address.'|t('faro-seo') }}</p>
+        </div>
+    {% endif %}
+{% endblock %}

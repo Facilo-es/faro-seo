@@ -1,0 +1,48 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:b8ac54d5-6e5c-4a6c-84c4-e49761a20346",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-11-19T17:24:38Z",
+    "component": {
+      "type": "library",
+      "bom-ref": "pkg:composer/facilo/faro-seo@1.0.0",
+      "group": "facilo",
+      "name": "faro-seo",
+      "version": "1.0.0",
+      "purl": "pkg:composer/facilo/faro-seo@1.0.0"
+    },
+    "supplier": {
+      "name": "Facilo",
+      "url": [
+        "https://facilo.es"
+      ]
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "pkg:composer/spatie/schema-org@3.23.2",
+      "group": "spatie",
+      "name": "schema-org",
+      "version": "3.23.2",
+      "purl": "pkg:composer/spatie/schema-org@3.23.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:composer/facilo/faro-seo@1.0.0",
+      "dependsOn": [
+        "pkg:composer/spatie/schema-org@3.23.2"
+      ]
+    }
+  ]
+}

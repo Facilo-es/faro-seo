@@ -1,0 +1,115 @@
+{# The SEO field in the entry editor: design A, with B's live preview, length bars and checks. #}
+{% import '_includes/forms' as forms %}
+{% set band = score is null ? null : (score >= 80 ? 'good' : (score >= 50 ? 'fair' : 'poor')) %}
+{% set bandText = {good: 'Good'|t('faro-seo'), fair: 'Needs work'|t('faro-seo'), poor: 'Poor'|t('faro-seo')} %}
+{% set host = previewUrl ? (previewUrl|split('/')[2] ?? '') : '' %}
+<div class="faro faro-field" id="{{ id }}" data-faro-field
+     data-element-id="{{ element.id ?? '' }}"
+     data-site-id="{{ element.siteId ?? '' }}"
+     data-fallback="{{ {title: fallback.title ?? '', description: fallback.description ?? ''}|json_encode }}">
+    {{ hiddenInput(name ~ '[json]', value|json_encode, {'data-faro-json': true}) }}
+
+    <div class="faro-field-head" role="tablist">
+        <a class="sel" role="tab" data-faro-tab="search">{{ 'Search'|t('faro-seo') }}</a>
+        {% if not field.hideSocial %}<a role="tab" data-faro-tab="social">{{ 'Social'|t('faro-seo') }}</a>{% endif %}
+        {% if not field.hideAdvanced %}<a role="tab" data-faro-tab="advanced">{{ 'Advanced'|t('faro-seo') }}</a>{% endif %}
+        <span class="score" data-faro-score>
+            <span class="faro-dot {{ band }}"></span>
+            <span>{{ band ? bandText[band] : 'Not checked yet'|t('faro-seo') }}</span>
+        </span>
+    </div>
+
+    {# Search #}
+    <div class="faro-field-body" data-faro-pane="search">
+        <div>
+            <div class="fl">
+                {{ forms.textField({label: 'Title'|t('faro-seo'), value: value.title, placeholder: fallback.title ?? '', inputAttributes: {'data-faro-key': 'title'}}) }}
+                <div class="faro-len" data-faro-len="title"><i></i></div>
+                <div class="faro-lenrow"><span data-faro-count="title"></span><span>{{ 'Updates as you type.'|t('faro-seo') }}</span></div>
+            </div>
+            <div class="fl">
+                {{ forms.textareaField({label: 'Description'|t('faro-seo'), value: value.description, rows: 3, placeholder: fallback.description ?? '', inputAttributes: {'data-faro-key': 'description'}}) }}
+                <div class="faro-len" data-faro-len="description"><i></i></div>
+                <div class="faro-lenrow"><span data-faro-count="description"></span></div>
+            </div>
+            <div class="fl">
+                {{ forms.textField({label: 'Focus keyword'|t('faro-seo'), value: value.keywords|join(', '), inputAttributes: {'data-faro-key': 'keywords'},
+                    instructions: 'The words people type to find this page.'|t('faro-seo')}) }}
+            </div>
+        </div>
+        <div>
+            <div class="faro-pv-top">
+                <b>{{ 'Google preview'|t('faro-seo') }}</b>
+                <span class="faro-seg"><a class="sel" data-faro-device="desk">{{ 'Desktop'|t('faro-seo') }}</a><a data-faro-device="mob">{{ 'Mobile'|t('faro-seo') }}</a></span>
+            </div>
+            <div class="faro-serp" data-faro-serp>
+                <div class="site">
+                    <span class="fav">{{ (siteName|default('?'))|slice(0, 1)|upper }}</span>
+                    <span><span class="sn">{{ siteName }}</span><br><span class="url">{{ previewUrl ?: host }}</span></span>
+                </div>
+                <p class="t" data-faro-pv="title">{{ value.title ?: fallback.title ?? '' }}</p>
+                <p class="d" data-faro-pv="description">{{ value.description ?: fallback.description ?? '' }}</p>
+            </div>
+            <h4 style="margin-top:16px">{{ 'Checks'|t('faro-seo') }}</h4>
+            <ul class="faro-checks" data-faro-checks>
+                <li class="faro-placeholder">{{ element and element.id ? 'Updates as you type.'|t('faro-seo') : 'Checks start once the page is saved.'|t('faro-seo') }}</li>
+            </ul>
+        </div>
+    </div>
+
+    {# Social #}
+    {% if not field.hideSocial %}
+        <div class="faro-field-body hidden" data-faro-pane="social">
+            <p class="full faro-muted">{{ 'Leave empty to use the search title, description and image.'|t('faro-seo') }}</p>
+            {% for net, label in {og: 'Facebook and LinkedIn'|t('faro-seo'), x: 'X'} %}
+                <div data-faro-net="{{ net }}">
+                    <h4>{{ label }}</h4>
+                    {{ forms.textField({label: 'Share title'|t('faro-seo'), value: value.social[net].title ?? '', inputAttributes: {'data-faro-key': 'social.' ~ net ~ '.title'}}) }}
+                    {{ forms.textareaField({label: 'Share description'|t('faro-seo'), value: value.social[net].description ?? '', rows: 2, inputAttributes: {'data-faro-key': 'social.' ~ net ~ '.description'}}) }}
+                    {{ forms.elementSelectField({label: 'Share image'|t('faro-seo'), id: id ~ '-img-' ~ net, name: id ~ '-img-' ~ net,
+                        elementType: 'craft\\elements\\Asset', criteria: {kind: 'image'}, limit: 1, elements: images[net] ? [images[net]] : [],
+                        jsClass: 'Craft.AssetSelectInput'}) }}
+                </div>
+            {% endfor %}
+            <div class="full faro-social" data-faro-cards>
+                {% for card in ['Facebook', 'X', 'LinkedIn'] %}
+                    <div class="card" data-faro-card="{{ card == 'X' ? 'x' : 'og' }}">
+                        <div class="img"></div>
+                        <div class="txt"><small>{{ card }} · {{ host }}</small><b></b><p></p></div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {# Advanced #}
+    {% if not field.hideAdvanced %}
+        {% set robotLabels = {
+            noindex: 'Hide from search engines (noindex)'|t('faro-seo'),
+            nofollow: 'Don’t follow links (nofollow)'|t('faro-seo'),
+            noarchive: 'No cached copy (noarchive)'|t('faro-seo'),
+            nosnippet: 'No snippet (nosnippet)'|t('faro-seo'),
+            notranslate: 'No translation offer (notranslate)'|t('faro-seo'),
+            noimageindex: 'Don’t index images (noimageindex)'|t('faro-seo'),
+        } %}
+        <div class="faro-field-body hidden" data-faro-pane="advanced">
+            <div>
+                {% for r in robotsOptions %}
+                    <div class="fl">{{ forms.checkbox({label: robotLabels[r] ?? r, value: r, checked: r in value.robots, inputAttributes: {'data-faro-robot': r}}) }}</div>
+                {% endfor %}
+            </div>
+            <div>
+                {{ forms.textField({label: 'Canonical URL'|t('faro-seo'), value: value.canonical, class: 'code', inputAttributes: {'data-faro-key': 'canonical'},
+                    instructions: 'Leave empty unless this page copies another.'|t('faro-seo')}) }}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% set fbAsset = (fallback.imageId ?? null) ? craft.app.assets.getAssetById(fallback.imageId) : null %}
+{% js %}
+    new Faro.Field({{ view.namespaceInputId(id)|json_encode|raw }}, {{ {
+        previewAction: 'faro-seo/field/preview',
+        images: {og: images.og ? images.og.getUrl({width: 600}) : null, x: images.x ? images.x.getUrl({width: 600}) : null},
+        fallbackImage: fbAsset ? fbAsset.getUrl({width: 600}) : null,
+    }|json_encode|raw }});
+{% endjs %}
