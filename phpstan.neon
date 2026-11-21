@@ -3,6 +3,8 @@ includes:
 
 parameters:
     level: 5
+    # Commerce is optional: its ignores only match where Commerce is missing.
+    reportUnmatchedIgnoredErrors: false
     paths:
         - src
     excludePaths:
