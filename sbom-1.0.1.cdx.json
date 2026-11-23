@@ -4,14 +4,14 @@
   "serialNumber": "urn:uuid:b8ac54d5-6e5c-4a6c-84c4-e49761a20346",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-11-19T17:24:38Z",
+    "timestamp": "2026-11-23T11:00:00Z",
     "component": {
       "type": "library",
-      "bom-ref": "pkg:composer/facilo/faro-seo@1.0.0",
+      "bom-ref": "pkg:composer/facilo/faro-seo@1.0.1",
       "group": "facilo",
       "name": "faro-seo",
-      "version": "1.0.0",
-      "purl": "pkg:composer/facilo/faro-seo@1.0.0"
+      "version": "1.0.1",
+      "purl": "pkg:composer/facilo/faro-seo@1.0.1"
     },
     "supplier": {
       "name": "Facilo",
@@ -39,7 +39,7 @@
   ],
   "dependencies": [
     {
-      "ref": "pkg:composer/facilo/faro-seo@1.0.0",
+      "ref": "pkg:composer/facilo/faro-seo@1.0.1",
       "dependsOn": [
         "pkg:composer/spatie/schema-org@3.23.2"
       ]

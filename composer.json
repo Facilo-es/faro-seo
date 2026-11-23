@@ -2,7 +2,7 @@
   "name": "facilo/faro-seo",
   "description": "Get found in search: titles, share images, sitemap and redirects for Craft, with a one-click move from Ether SEO. Pro finds broken links and suggests the fix.",
   "type": "craft-plugin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "proprietary",
   "homepage": "https://facilo.es/",
   "keywords": [
