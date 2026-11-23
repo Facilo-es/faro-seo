@@ -15,6 +15,7 @@ class UtilityController extends Controller
 {
     public function beforeAction($action): bool
     {
+        $this->requireAdmin(false);
         $this->requirePermission('utility:' . MoveFromEther::id());
         return parent::beforeAction($action);
     }

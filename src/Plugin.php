@@ -56,7 +56,7 @@ use yii\web\NotFoundHttpException;
  */
 class Plugin extends BasePlugin
 {
-    public const EDITION_FREE = 'free';
+    public const EDITION_LITE = 'lite';
     public const EDITION_PRO = 'pro';
     public const PRO_URL = 'https://plugins.craftcms.com/faro-seo';
 
@@ -66,7 +66,7 @@ class Plugin extends BasePlugin
 
     public static function editions(): array
     {
-        return [self::EDITION_FREE, self::EDITION_PRO];
+        return [self::EDITION_LITE, self::EDITION_PRO];
     }
 
     public static function config(): array
@@ -242,17 +242,30 @@ class Plugin extends BasePlugin
 
         if ($request->getIsCpRequest()) {
             Event::on(Cp::class, Cp::EVENT_REGISTER_ALERTS, function(RegisterCpAlertsEvent $event) {
-                if (!$this->isProduction() && Craft::$app->getUser()->getIsAdmin() && str_starts_with(Craft::$app->getRequest()->getPathInfo(), 'faro-seo')) {
+                if (!$this->isProduction() && Craft::$app->getUser()->getIsAdmin() && self::onFaroPage()) {
                     $event->alerts[] = \craft\helpers\Html::encode(self::nonProductionText());
+                }
+                // A robots.txt file in the web root is served before Craft runs, so Faro's own never shows.
+                $webroot = Craft::getAlias('@webroot', false);
+                if ($webroot && is_file($webroot . '/robots.txt') && Craft::$app->getUser()->getIsAdmin() && self::onFaroPage()) {
+                    $event->alerts[] = \craft\helpers\Html::encode(Craft::t('faro-seo', 'Your web root has its own robots.txt file, so visitors and search engines never see the one Faro writes. Delete that file to use Faro\'s robots.txt and its sitemap line.'));
                 }
             });
         }
     }
 
+    /** CP alerts can be fetched by an action request that posts the page path, so read that first. */
+    private static function onFaroPage(): bool
+    {
+        $request = Craft::$app->getRequest();
+        $path = $request->getIsActionRequest() ? $request->getBodyParam('path') : null;
+        return str_starts_with(is_string($path) ? trim($path, '/') : $request->getPathInfo(), 'faro-seo');
+    }
+
     public static function nonProductionText(): string
     {
         $env = (string)Craft::$app->env;
-        return Craft::t('faro-seo', 'Search engines are told not to index this site, because its environment is \'{env}\'. If this is your live site, add \'{env}\' under Settings → Indexing.', ['env' => $env === '' ? '(none)' : $env]);
+        return Craft::t('faro-seo', 'Search engines are told not to index this site, because its environment is “{env}”. If this is your live site, add “{env}” under Settings → Indexing.', ['env' => $env === '' ? '(none)' : $env]);
     }
 
     public function getCpNavItem(): ?array

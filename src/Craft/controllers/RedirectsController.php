@@ -14,6 +14,8 @@ use yii\web\Response;
 /** Faro SEO → Redirects (F7, F13). */
 class RedirectsController extends BaseCpController
 {
+    private const MAX_CSV_BYTES = 10 * 1024 * 1024;
+
     public function beforeAction($action): bool
     {
         $this->requirePermission('faro-seo:redirects');
@@ -107,6 +109,7 @@ class RedirectsController extends BaseCpController
     /** CSV import (Pro, F13): a dry run first, then the real one. */
     public function actionImport(): Response
     {
+        $this->requireAdmin(false);
         $req = Craft::$app->getRequest();
         if (!$req->getIsPost() && !$this->plugin()->proActive()) {
             return $this->page('_pro-notice', ['title' => Craft::t('faro-seo', 'Import redirects')]);
@@ -126,6 +129,10 @@ class RedirectsController extends BaseCpController
         } else {
             $source = 'csv';
             $file = UploadedFile::getInstanceByName('csv');
+            if ($file && $file->size > self::MAX_CSV_BYTES) {
+                Craft::$app->getSession()->setError(Craft::t('faro-seo', 'The file is larger than 10 MB. Split it and import each part.'));
+                return $this->page('redirects/import', ['title' => Craft::t('faro-seo', 'Import redirects'), 'result' => null, 'foreign' => $foreign, 'source' => 'csv']);
+            }
             $csv = $file ? (string)file_get_contents($file->tempName) : (string)Craft::$app->getSession()->get('faro-import-csv', '');
             $parsed = Csv::import($csv, $siteId, $this->plugin()->redirects->allowedCodes());
             $result = $this->plugin()->redirects->import($parsed['rows'], 'csv', $dryRun);

@@ -44,6 +44,15 @@ final class EtherTest extends TestCase
         self::assertSame('https://x.es/c', $v->canonical);
     }
 
+    public function testFaroValueFromCodeWithoutVersionIsNotEther(): void
+    {
+        $value = ['title' => 'Paella', 'social' => ['og' => ['title' => 'La paella de verdad']]];
+        self::assertFalse(EtherMapping::isEtherShape($value));
+        $v = SeoValue::from($value);
+        self::assertFalse($v->fromEther);
+        self::assertSame('La paella de verdad', $v->social['og']['title']);
+    }
+
     public function testFaroValueRoundTrip(): void
     {
         $v = SeoValue::from(['v' => 1, 'title' => 'T', 'description' => 'D', 'robots' => ['nofollow']]);

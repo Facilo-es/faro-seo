@@ -65,8 +65,9 @@ class Sitemap extends Component
     }
 
     /** Adds a row, switched on, for each source that has none yet. */
-    public function syncSources(): void
+    public function syncSources(bool $force = true): void
     {
+        $added = false;
         $have = [];
         foreach ((new Query())->select(['siteId', 'sourceType', 'sourceUid'])->from(Install::SITEMAP_SOURCES)->all() as $r) {
             $have[$r['siteId'] . '|' . $r['sourceType'] . '|' . $r['sourceUid']] = true;
@@ -77,9 +78,12 @@ class Sitemap extends Component
                     'siteId' => $a['siteId'], 'sourceType' => $a['type'], 'sourceUid' => $a['uid'],
                     'enabled' => true, 'changefreq' => 'weekly', 'priority' => 0.5, 'uid' => StringHelper::UUID(),
                 ]);
+                $added = true;
             }
         }
-        $this->clear();
+        if ($added || $force) {
+            $this->clear();
+        }
     }
 
     public function clear(): void
@@ -177,6 +181,8 @@ class Sitemap extends Component
 
     public function indexXml(Site $site): string
     {
+        // A section made after install joins the sitemap the first time a crawler asks for it.
+        $this->syncSources(false);
         return $this->cached("index:{$site->id}", fn() => SitemapWriter::index($this->children($site)));
     }
 

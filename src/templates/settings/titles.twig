@@ -14,7 +14,7 @@
                 {value: 'after', label: 'After the title'|t('faro-seo')},
                 {value: 'before', label: 'Before the title'|t('faro-seo')},
                 {value: 'none', label: 'Not in the title'|t('faro-seo')}]}) }}
-            <p class="faro-muted">{{ 'Example'|t('faro-seo') }}: <span class="faro-mono" data-faro-example>{{ '{Page title}'|t('faro-seo') }} {{ f.separator ?? '|' }} {{ f.siteName ?: site.name }}</span></p>
+            <p class="faro-muted">{{ 'Example'|t('faro-seo') }}: <span class="faro-mono" data-faro-example>{{ '{Page title}'|t('faro-seo') }} {{ f.separator ?? '|' }} {{ (f.siteName ?? '') ?: site.name }}</span></p>
             {{ forms.textareaField({label: 'Default description'|t('faro-seo'), name: 'settings[defaultDescriptions][' ~ site.uid ~ ']', value: settings.defaultDescriptions[site.uid] ?? '', rows: 2}) }}
             {{ forms.elementSelectField({label: 'Default share image'|t('faro-seo'), name: 'settings[defaultImages][' ~ site.uid ~ ']', id: 'faro-img-' ~ site.id,
                 elementType: 'craft\\elements\\Asset', criteria: {kind: 'image'}, limit: 1, elements: (images[site.uid] ?? null) ? [images[site.uid]] : []}) }}

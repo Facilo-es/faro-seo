@@ -32,6 +32,10 @@ final class EtherMapping
         if (array_key_exists('v', $v)) {
             return false;
         }
+        // Faro's own social keys mean a Faro value set from code, even without the version key.
+        if (is_array($v['social'] ?? null) && (isset($v['social']['og']) || isset($v['social']['x']))) {
+            return false;
+        }
         foreach (['titleRaw', 'descriptionRaw', 'advanced', 'keyword'] as $k) {
             if (array_key_exists($k, $v)) {
                 return true;

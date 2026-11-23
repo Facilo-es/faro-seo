@@ -418,7 +418,8 @@ class Mover extends Component
         $mapped = EtherMapping::settings($this->etherSettings(), $check);
         $current = $plugin->getSettings()->toArray();
         $siteUids = array_map(fn($s) => $s->uid, Craft::$app->getSites()->getAllSites());
-        $values = [];
+        // Craft saves the array it is given as the whole settings, so start from what is there: a second move keeps what the first set (T46).
+        $values = $current;
         foreach ($mapped as $key => $v) {
             switch ($key) {
                 case 'sitemapName':
