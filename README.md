@@ -46,7 +46,7 @@ If you don't renew, Pro keeps working as it is: Craft licences are perpetual. Yo
 
 ## Craft 6
 
-Faro SEO 1.x runs on Craft 5. A Craft 6 version is planned, and the stable one follows Craft 6.0.
+Faro SEO 1.x runs on Craft 5. A Craft 6 version is in beta, and the stable one follows Craft 6.0.
 
 ## Documentation
 
@@ -58,6 +58,8 @@ Faro SEO 1.x runs on Craft 5. A Craft 6 version is planned, and the stable one f
 ## Also from Facilo
 
 Moving from Ether's Maps plugin too? [Rumbo Maps](https://plugins.craftcms.com/rumbo-maps) moves your locations and keeps your map templates working.
+
+Selling in Spain with Craft Commerce? [Cobro Redsys](https://plugins.craftcms.com/cobro-redsys) takes card and Bizum payments through your bank's Redsys terminal.
 
 ## Support
 

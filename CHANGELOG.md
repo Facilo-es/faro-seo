@@ -1,5 +1,11 @@
 # Release Notes for Faro SEO
 
+## 2.0.0-beta.1 - 2026-11-24
+
+### Changed
+- Runs on Craft CMS 6 beta (PHP 8.5). Everything in 1.x works the same, including the move from Ether SEO.
+- Includes every fix in 1.0.1.
+
 ## 1.0.1 - 2026-11-23
 
 ### Changed

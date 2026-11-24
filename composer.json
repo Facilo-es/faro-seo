@@ -2,7 +2,7 @@
   "name": "facilo/faro-seo",
   "description": "Get found in search: titles, share images, sitemap and redirects for Craft, with a one-click move from Ether SEO. Pro finds broken links and suggests the fix.",
   "type": "craft-plugin",
-  "version": "1.0.1",
+  "version": "2.0.0-beta.1",
   "license": "proprietary",
   "homepage": "https://facilo.es/",
   "keywords": [
@@ -25,14 +25,12 @@
     "source": "https://github.com/Facilo-es/faro-seo"
   },
   "require": {
-    "php": "^8.2",
-    "craftcms/cms": "^5.5.0",
+    "php": "^8.5",
+    "craftcms/cms": "^6.0.0",
+    "craftcms/yii2-adapter": "^6.0.0",
     "spatie/schema-org": "^3.0"
   },
   "require-dev": {
-    "craftcms/ecs": "dev-main",
-    "craftcms/phpstan": "dev-main",
-    "phpstan/phpstan": "^1.12",
     "phpunit/phpunit": "^11.0"
   },
   "autoload": {
@@ -64,6 +62,6 @@
     "fix-cs": "ecs check --ansi --fix",
     "phpstan": "phpstan --memory-limit=1G"
   },
-  "minimum-stability": "stable",
+  "minimum-stability": "beta",
   "prefer-stable": true
 }

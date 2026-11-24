@@ -1,17 +1,17 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:b8ac54d5-6e5c-4a6c-84c4-e49761a20346",
+  "serialNumber": "urn:uuid:1b1666f6-1e60-4532-9fed-96393a08e5d5",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-11-23T11:00:00Z",
+    "timestamp": "2026-11-24T08:02:31Z",
     "component": {
       "type": "library",
-      "bom-ref": "pkg:composer/facilo/faro-seo@1.0.1",
+      "bom-ref": "pkg:composer/facilo/faro-seo@2.0.0-beta.1",
       "group": "facilo",
       "name": "faro-seo",
-      "version": "1.0.1",
-      "purl": "pkg:composer/facilo/faro-seo@1.0.1"
+      "version": "2.0.0-beta.1",
+      "purl": "pkg:composer/facilo/faro-seo@2.0.0-beta.1"
     },
     "supplier": {
       "name": "Facilo",
@@ -21,6 +21,21 @@
     }
   },
   "components": [
+    {
+      "type": "library",
+      "bom-ref": "pkg:composer/craftcms/yii2-adapter@6.0.0-beta.2",
+      "group": "craftcms",
+      "name": "yii2-adapter",
+      "version": "6.0.0-beta.2",
+      "purl": "pkg:composer/craftcms/yii2-adapter@6.0.0-beta.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "proprietary"
+          }
+        }
+      ]
+    },
     {
       "type": "library",
       "bom-ref": "pkg:composer/spatie/schema-org@3.23.2",
@@ -39,8 +54,9 @@
   ],
   "dependencies": [
     {
-      "ref": "pkg:composer/facilo/faro-seo@1.0.1",
+      "ref": "pkg:composer/facilo/faro-seo@2.0.0-beta.1",
       "dependsOn": [
+        "pkg:composer/craftcms/yii2-adapter@6.0.0-beta.2",
         "pkg:composer/spatie/schema-org@3.23.2"
       ]
     }
